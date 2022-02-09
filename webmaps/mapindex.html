@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+		    <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+    
+        
+    
+    <script src="lib/jquery/jquery-1.9.1.js"></script>
+    <script src="lib/jquery/jquery-ui-1.10.3.custom.min.js"></script>
+    <link rel="stylesheet" href="lib/jquery/jquery-ui-1.10.3.custom.min.css" />
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+		<script src="lib/opacity/Control.Opacity.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:23, minZoom:1
+        }).fitBounds([[43.66971936188328,-79.40439429675939],[43.676242850713564,-79.38754959290323]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_satellite_0');
+        map.getPane('pane_satellite_0').style.zIndex = 400;
+        var layer_satellite_0 = L.tileLayer('https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=crggkK1JP9n2pzNrEI9t', {
+            pane: 'pane_satellite_0',
+            opacity: 1.0,
+            attribution: '<a href=""><a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a></a>',
+            minZoom: 1,
+            maxZoom: 23,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_satellite_0;
+        map.addLayer(layer_satellite_0);
+        map.createPane('pane_TorontoGoadmap_2');
+        map.getPane('pane_TorontoGoadmap_2').style.zIndex = 402;
+        var img_TorontoGoadmap_2 = 'data/TorontoGoadmap_2.png';
+        var img_bounds_TorontoGoadmap_2 = [[43.67097716195597,-79.4002191646542],[43.67512737756318,-79.39497823526096]];
+        var layer_TorontoGoadmap_2 = new L.imageOverlay(img_TorontoGoadmap_2,
+                                              img_bounds_TorontoGoadmap_2,
+                                              {pane: 'pane_TorontoGoadmap_2'});
+        var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    maxZoom: 17,
+    attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+});
+        OpenTopoMap;
+        map.addLayer(OpenTopoMap);
+
+        bounds_group.addLayer(layer_TorontoGoadmap_2);
+        map.addLayer(layer_TorontoGoadmap_2);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{"Toronto Goad map": layer_TorontoGoadmap_2,"Open topographic map":OpenTopoMap, "satellite": layer_satellite_0,}).addTo(map);
+        setBounds();
+        L.ImageOverlay.include({
+            getBounds: function () {
+                return this._bounds;
+            }
+        });
+		    //Create the opacity controls
+        var higherOpacity = new L.Control.higherOpacity();
+        map.addControl(higherOpacity);
+        var lowerOpacity = new L.Control.lowerOpacity();
+        map.addControl(lowerOpacity);
+        var opacitySlider = new L.Control.opacitySlider();
+        var opacitySlider2 = new L.Control.opacitySlider();
+        map.addControl(opacitySlider);
+//        map.addControl(opacitySlider2);
+
+    //Specify the layer for which you want to modify the opacity. Note that the setOpacityLayer() method applies to all the controls.
+    //You only need to call it once. 
+        opacitySlider.setOpacityLayer(layer_TorontoGoadmap_2);
+ //       opacitySlider2.setOpacityLayer(layer_satellite_0);
+        
+    //Set initial opacity to 0.5 (Optional)
+//        layer_TorontoGoadmap_2.setOpacity(0.5);
+        </script>
+    </body>
+</html>
